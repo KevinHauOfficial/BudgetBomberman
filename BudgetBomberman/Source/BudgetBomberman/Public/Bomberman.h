@@ -7,7 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Bomberman.generated.h"
@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MaxHealth = 2.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float MovementSpeed = 300.f; // Can be increased with Speed powerup (drops by X levels on death)
+	float MovementSpeed = 5.f; // Can be increased with Speed powerup (drops by X levels on death)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float BombCapacity = 1.f; // Can be increased with Capacity powerup (until max capacity)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
@@ -35,6 +35,9 @@ public:
 	float BombRange = 1.f; // Can be increased by Range powerup
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MaxBombRange = 10.f;
+
+	void MoveForward(float Axis);
+	void MoveRight(float Axis);
 
 protected:
 	// Called when the game starts or when spawned

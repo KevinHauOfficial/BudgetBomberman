@@ -34,5 +34,29 @@ void ABomberman::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward",this, &ABomberman::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ABomberman::MoveRight);
+
 }
 
+void ABomberman::MoveForward(float Axis)
+{
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+
+	UE_LOG(LogTemp, Warning, TEXT("MoveForward being called! %f"), Axis);
+}
+
+void ABomberman::MoveRight(float Axis)
+{
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+
+	UE_LOG(LogTemp, Warning, TEXT("MoveRight being called! %f"), Axis);
+}
