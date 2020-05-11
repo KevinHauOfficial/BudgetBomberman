@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MaxHealth = 2.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float MovementSpeed = 5.f; // Can be increased with Speed powerup (drops by X levels on death)
+	float MovementSpeed = 2.f; // Can be increased with Speed powerup (drops by X levels on death)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float BombCapacity = 1.f; // Can be increased with Capacity powerup (until max capacity)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
