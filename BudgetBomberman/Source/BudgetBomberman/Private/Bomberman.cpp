@@ -2,6 +2,7 @@
 
 
 #include "Bomberman.h"
+#include "Bomb.h"
 
 // Sets default values
 ABomberman::ABomberman()
@@ -37,6 +38,8 @@ void ABomberman::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveForward",this, &ABomberman::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABomberman::MoveRight);
 
+	PlayerInputComponent->BindAction("PlaceBomb", IE_Pressed, this, &ABomberman::SpawnBomb);
+
 }
 
 void ABomberman::MoveForward(float Axis)
@@ -46,8 +49,6 @@ void ABomberman::MoveForward(float Axis)
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
 	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
-
-	UE_LOG(LogTemp, Warning, TEXT("MoveForward being called! %f"), Axis);
 }
 
 void ABomberman::MoveRight(float Axis)
@@ -57,6 +58,10 @@ void ABomberman::MoveRight(float Axis)
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("MoveRight being called! %f"), Axis);
+void ABomberman::SpawnBomb()
+{
+	FActorSpawnParameters SpawnParams;
+	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(BombToSpawn, GetActorLocation() + FVector(0.f, 0.f, 100.f), GetActorRotation(), SpawnParams);
 }

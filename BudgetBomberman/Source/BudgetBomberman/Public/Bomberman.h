@@ -12,6 +12,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Bomberman.generated.h"
 
+class ABomb;
+
 UCLASS()
 class BUDGETBOMBERMAN_API ABomberman : public APawn
 {
@@ -38,6 +40,12 @@ public:
 
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
+	TSubclassOf<AActor> BombToSpawn;
+	UFUNCTION()
+	void SpawnBomb();
 
 protected:
 	// Called when the game starts or when spawned
