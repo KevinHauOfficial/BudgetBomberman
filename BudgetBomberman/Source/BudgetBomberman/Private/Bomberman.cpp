@@ -49,6 +49,8 @@ void ABomberman::MoveForward(float Axis)
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
 	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+
+	UE_LOG(LogTemp, Warning, TEXT("Foward axis: %f"), Axis);
 }
 
 void ABomberman::MoveRight(float Axis)
@@ -58,31 +60,39 @@ void ABomberman::MoveRight(float Axis)
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+
+	UE_LOG(LogTemp, Warning, TEXT("Right axis: %f"), Axis);
 }
 
 void ABomberman::SpawnBomb()
 {
-	float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
-	float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+	AActor* SpawnedActorRef;
 
-	int BombSpawnXToGrid = BombSpawnX;
-	BombSpawnXToGrid *= 100;
-	int BombSpawnYToGrid = BombSpawnY;
-	BombSpawnYToGrid *= 100;
+	if (BombCapacity > 0)
+	{
+		float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
+		float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
 
-	FVector BombSpawnLocation(
-		BombSpawnXToGrid,
-		BombSpawnYToGrid,
-		GetActorLocation().Z
-	);
+		int BombSpawnXToGrid = BombSpawnX;
+		BombSpawnXToGrid *= 100;
+		int BombSpawnYToGrid = BombSpawnY;
+		BombSpawnYToGrid *= 100;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *BombSpawnLocation.ToCompactString());
+		FVector BombSpawnLocation(
+			BombSpawnXToGrid,
+			BombSpawnYToGrid,
+			GetActorLocation().Z
+		);
 
-	FActorSpawnParameters SpawnParams;
-	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
-		BombToSpawn, 
-		BombSpawnLocation, 
-		GetActorRotation(), 
-		SpawnParams
-	);
+		FActorSpawnParameters SpawnParams;
+		SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
+			BombToSpawn, 
+			BombSpawnLocation, 
+			GetActorRotation(), 
+			SpawnParams
+		);
+
+		BombCapacity--;
+	}	
+	
 }
