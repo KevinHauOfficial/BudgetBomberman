@@ -97,8 +97,7 @@ void ABomberman::SpawnBomb()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Removing: %s"), *BombsSpawned[BombIndex]->GetName());
 				BombsSpawned.RemoveAt(BombIndex, 1, true);
-				BombIndex--;
-
+				
 				BombCapacity++;
 				SpawnBomb();
 			}
