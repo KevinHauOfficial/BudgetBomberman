@@ -11,14 +11,9 @@ UCLASS()
 class BUDGETBOMBERMAN_API ABomb : public AActor
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Properties")
 	float ExplosionDelay = 3.f;
-
-	void SpawnBomb();
 
 public:	
 	// Sets default values for this actor's properties

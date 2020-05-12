@@ -28,14 +28,6 @@ void ABomberman::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-    // Handle movement based on our "MoveForward" and "MoveRight" axes
-    {
-        if (!CurrentVelocity.IsZero())
-        {
-            FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-            SetActorLocation(NewLocation);
-        }
-    }
 }
 
 // Called to bind functionality to input
@@ -52,45 +44,39 @@ void ABomberman::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ABomberman::MoveForward(float Axis)
 {
-	CurrentVelocity.X = FMath::Clamp(Axis, -1.f, 1.f) * 100.f * MovementSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("Forward Axis: %f"), Axis);
+	float VelocityMultiplier = GetWorld()->DeltaTimeSeconds * 100.f * MovementSpeed;
+	CurrentVelocity.X = FMath::Clamp(Axis, -1.f, 1.f) * VelocityMultiplier;
+	SetActorLocation(GetActorLocation() + CurrentVelocity);
 }
 
 void ABomberman::MoveRight(float Axis)
 {
-	CurrentVelocity.Y = FMath::Clamp(Axis, -1.f, 1.f) * 100.f * MovementSpeed;
-	UE_LOG(LogTemp, Warning, TEXT("Right Axis: %f"), Axis);
+	float VelocityMultiplier = GetWorld()->DeltaTimeSeconds * 100.f * MovementSpeed;
+	CurrentVelocity.Y = FMath::Clamp(Axis, -1.f, 1.f) * VelocityMultiplier;
+	SetActorLocation(GetActorLocation() + CurrentVelocity);
 }
 
 void ABomberman::SpawnBomb()
 {
-	AActor* SpawnedActorRef;
+	float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
+	float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
 
-	if (BombCapacity > 0)
-	{
-		float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
-		float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+	int BombSpawnXToGrid = BombSpawnX;
+	BombSpawnXToGrid *= 100;
+	int BombSpawnYToGrid = BombSpawnY;
+	BombSpawnYToGrid *= 100;
 
-		int BombSpawnXToGrid = BombSpawnX;
-		BombSpawnXToGrid *= 100;
-		int BombSpawnYToGrid = BombSpawnY;
-		BombSpawnYToGrid *= 100;
+	FVector BombSpawnLocation(
+		BombSpawnXToGrid,
+		BombSpawnYToGrid,
+		GetActorLocation().Z
+	);
 
-		FVector BombSpawnLocation(
-			BombSpawnXToGrid,
-			BombSpawnYToGrid,
-			GetActorLocation().Z
-		);
-
-		FActorSpawnParameters SpawnParams;
-		SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
-			BombToSpawn, 
-			BombSpawnLocation, 
-			GetActorRotation(), 
-			SpawnParams
-		);
-
-		BombCapacity--;
-	}	
-	
+	FActorSpawnParameters SpawnParams;
+	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
+		BombToSpawn, 
+		BombSpawnLocation, 
+		GetActorRotation(), 
+		SpawnParams
+	);
 }
