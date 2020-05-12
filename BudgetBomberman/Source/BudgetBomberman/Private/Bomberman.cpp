@@ -28,6 +28,14 @@ void ABomberman::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    // Handle movement based on our "MoveForward" and "MoveRight" axes
+    {
+        if (!CurrentVelocity.IsZero())
+        {
+            FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
+            SetActorLocation(NewLocation);
+        }
+    }
 }
 
 // Called to bind functionality to input
@@ -44,20 +52,14 @@ void ABomberman::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ABomberman::MoveForward(float Axis)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+	CurrentVelocity.X = FMath::Clamp(Axis, -1.f, 1.f) * 100.f * MovementSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("Forward Axis: %f"), Axis);
 }
 
 void ABomberman::MoveRight(float Axis)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	SetActorLocation(GetActorLocation() + Direction * Axis * MovementSpeed, true);
+	CurrentVelocity.Y = FMath::Clamp(Axis, -1.f, 1.f) * 100.f * MovementSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("Right Axis: %f"), Axis);
 }
 
 void ABomberman::SpawnBomb()
