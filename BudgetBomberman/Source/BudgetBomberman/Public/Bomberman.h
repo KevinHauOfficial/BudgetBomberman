@@ -46,8 +46,10 @@ public:
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
 
+	// Bomb spawning
+	TArray<ABomb*> BombsSpawned;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> BombToSpawn;
+	TSubclassOf<ABomb> BombToSpawn;
 	UFUNCTION()
 	void SpawnBomb();
 

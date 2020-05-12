@@ -58,25 +58,52 @@ void ABomberman::MoveRight(float Axis)
 
 void ABomberman::SpawnBomb()
 {
-	float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
-	float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+	if (BombCapacity > 0)
+	{
+		// Setting location of bomb spawn to the nearest hundred
+		float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
+		float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
 
-	int BombSpawnXToGrid = BombSpawnX;
-	BombSpawnXToGrid *= 100;
-	int BombSpawnYToGrid = BombSpawnY;
-	BombSpawnYToGrid *= 100;
+		int BombSpawnXToGrid = BombSpawnX;
+		BombSpawnXToGrid *= 100;
+		int BombSpawnYToGrid = BombSpawnY;
+		BombSpawnYToGrid *= 100;
 
-	FVector BombSpawnLocation(
-		BombSpawnXToGrid,
-		BombSpawnYToGrid,
-		GetActorLocation().Z
-	);
+		FVector BombSpawnLocation(
+			BombSpawnXToGrid,
+			BombSpawnYToGrid,
+			GetActorLocation().Z
+		);
 
-	FActorSpawnParameters SpawnParams;
-	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
-		BombToSpawn, 
-		BombSpawnLocation, 
-		GetActorRotation(), 
-		SpawnParams
-	);
+		FActorSpawnParameters SpawnParams;
+		ABomb* SpawnedActorRef = GetWorld()->SpawnActor<ABomb>(
+			BombToSpawn, 
+			BombSpawnLocation, 
+			GetActorRotation(), 
+			SpawnParams
+		);
+
+		SpawnedActorRef->BombRangeMultiplier = BombRange;
+
+		BombsSpawned.Emplace(SpawnedActorRef);
+
+		BombCapacity--;
+	}
+	else
+	{
+		for (int BombIndex = 0; BombIndex < BombsSpawned.Num(); BombIndex++)
+		{
+			if (BombsSpawned[BombIndex]->TimeSinceSpawned > BombsSpawned[BombIndex]->ExplosionDelay)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Removing: %s"), *BombsSpawned[BombIndex]->GetName());
+				BombsSpawned.RemoveAt(BombIndex, 1, true);
+				BombIndex--;
+
+				BombCapacity++;
+				SpawnBomb();
+			}
+		}
+		
+	}
+	
 }

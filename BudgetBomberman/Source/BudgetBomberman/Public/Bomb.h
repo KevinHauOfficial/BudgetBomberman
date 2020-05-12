@@ -12,12 +12,18 @@ class BUDGETBOMBERMAN_API ABomb : public AActor
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "Properties")
-	float ExplosionDelay = 3.f;
-
 public:	
 	// Sets default values for this actor's properties
 	ABomb();
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties")
+	float TimeSinceSpawned = 0.f;
+	UPROPERTY(EditAnywhere, Category = "Properties")
+	float ExplosionDelay = 3.f;
+	UPROPERTY(VisibleAnywhere, Category = "Properties")
+	float BombRangeBase = 150.f;
+	UPROPERTY(VisibleAnywhere, Category = "Properties")
+	float BombRangeMultiplier = 0.f;
 
 protected:
 	// Called when the game starts or when spawned
