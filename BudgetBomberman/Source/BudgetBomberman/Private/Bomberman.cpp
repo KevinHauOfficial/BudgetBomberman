@@ -62,6 +62,27 @@ void ABomberman::MoveRight(float Axis)
 
 void ABomberman::SpawnBomb()
 {
+	float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
+	float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+
+	int BombSpawnXToGrid = BombSpawnX;
+	BombSpawnXToGrid *= 100;
+	int BombSpawnYToGrid = BombSpawnY;
+	BombSpawnYToGrid *= 100;
+
+	FVector BombSpawnLocation(
+		BombSpawnXToGrid,
+		BombSpawnYToGrid,
+		GetActorLocation().Z
+	);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *BombSpawnLocation.ToCompactString());
+
 	FActorSpawnParameters SpawnParams;
-	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(BombToSpawn, GetActorLocation() + FVector(0.f, 0.f, 100.f), GetActorRotation(), SpawnParams);
+	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(
+		BombToSpawn, 
+		BombSpawnLocation, 
+		GetActorRotation(), 
+		SpawnParams
+	);
 }
