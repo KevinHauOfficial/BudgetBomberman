@@ -41,6 +41,8 @@ public:
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
 
+	FVector CurrentVelocity;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> BombToSpawn;
