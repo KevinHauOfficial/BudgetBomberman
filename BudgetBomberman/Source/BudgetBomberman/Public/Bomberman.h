@@ -50,8 +50,13 @@ public:
 	TArray<ABomb*> BombsSpawned;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<ABomb> BombToSpawn;
+
 	UFUNCTION()
 	void SpawnBomb();
+
+private:
+	FVector GetBombSpawnLocation() const;
+	void RemoveDespawnedBombs();
 
 protected:
 	// Called when the game starts or when spawned

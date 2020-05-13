@@ -2,6 +2,7 @@
 
 
 #include "Bomb.h"
+#include "Components/PrimitiveComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Math/Color.h"
 #include "UObject/ConstructorHelpers.h"
@@ -21,8 +22,6 @@ void ABomb::BeginPlay()
 	Super::BeginPlay();
 
 	TimeSinceSpawned = GetWorld()->DeltaTimeSeconds;
-
-	SetActorEnableCollision(false);
 }
 
 // Called every frame
@@ -30,17 +29,14 @@ void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TArray<AActor*> OverlappingActors;
-	// GetOverlappingActors(OverlappingActors, TSubclassOf<ABomberman>());
-	// if (OverlappingActors.Num() == 0)
-	// {
-	// 	SetActorEnableCollision(true);
-	// }
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, TSubclassOf<ABomberman>());
 	
+	
+	TimeSinceSpawned += GetWorld()->DeltaTimeSeconds;
 
 	if (TimeSinceSpawned < ExplosionDelay)
 	{
-		TimeSinceSpawned += GetWorld()->DeltaTimeSeconds;
 		
 		float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
 

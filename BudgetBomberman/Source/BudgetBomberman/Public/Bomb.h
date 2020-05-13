@@ -16,6 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	ABomb();
 
+	// Properties
 	UPROPERTY(VisibleAnywhere, Category = "Properties")
 	float TimeSinceSpawned = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Properties")

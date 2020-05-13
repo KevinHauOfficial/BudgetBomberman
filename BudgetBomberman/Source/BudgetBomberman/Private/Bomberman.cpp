@@ -39,7 +39,6 @@ void ABomberman::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABomberman::MoveRight);
 
 	PlayerInputComponent->BindAction("PlaceBomb", IE_Pressed, this, &ABomberman::SpawnBomb);
-
 }
 
 void ABomberman::MoveForward(float Axis)
@@ -61,20 +60,9 @@ void ABomberman::SpawnBomb()
 	if (BombCapacity > 0)
 	{
 		// Setting location of bomb spawn to the nearest hundred
-		float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
-		float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+		FVector BombSpawnLocation = GetBombSpawnLocation();
 
-		int BombSpawnXToGrid = BombSpawnX;
-		BombSpawnXToGrid *= 100;
-		int BombSpawnYToGrid = BombSpawnY;
-		BombSpawnYToGrid *= 100;
-
-		FVector BombSpawnLocation(
-			BombSpawnXToGrid,
-			BombSpawnYToGrid,
-			GetActorLocation().Z
-		);
-
+		// Spawn a bomb and store a reference to that bomb
 		FActorSpawnParameters SpawnParams;
 		ABomb* SpawnedActorRef = GetWorld()->SpawnActor<ABomb>(
 			BombToSpawn, 
@@ -83,26 +71,41 @@ void ABomberman::SpawnBomb()
 			SpawnParams
 		);
 
+		// Set bomb's explosion range to the explosion range of the player
 		SpawnedActorRef->BombRangeMultiplier = BombRange;
-
+		// Add a reference to the bomb to the player's bomb spawned list
 		BombsSpawned.Emplace(SpawnedActorRef);
-
+		// Reduce the number of bombs the player can place down
 		BombCapacity--;
 	}
-	else
+	else // Remove any bombs that have blown up and replenish player's bomb capacity
 	{
-		for (int BombIndex = 0; BombIndex < BombsSpawned.Num(); BombIndex++)
-		{
-			if (BombsSpawned[BombIndex]->TimeSinceSpawned > BombsSpawned[BombIndex]->ExplosionDelay)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Removing: %s"), *BombsSpawned[BombIndex]->GetName());
-				BombsSpawned.RemoveAt(BombIndex, 1, true);
-				
-				BombCapacity++;
-				SpawnBomb();
-			}
-		}
-		
+		RemoveDespawnedBombs();		
 	}
-	
+}
+
+FVector ABomberman::GetBombSpawnLocation() const
+{
+	float BombSpawnX = FMath::DivideAndRoundNearest(GetActorLocation().X, 100.f);
+	float BombSpawnY = FMath::DivideAndRoundNearest(GetActorLocation().Y, 100.f);
+
+	int BombSpawnXToGrid = BombSpawnX;
+	BombSpawnXToGrid *= 100;
+	int BombSpawnYToGrid = BombSpawnY;
+	BombSpawnYToGrid *= 100;
+
+	return FVector(BombSpawnXToGrid, BombSpawnYToGrid, GetActorLocation().Z);
+}
+
+void ABomberman::RemoveDespawnedBombs()
+{
+	// Checks only if the first bomb in the list has despawned as they are
+	// appended by earliest bomb placed
+	if (BombsSpawned[0]->TimeSinceSpawned > BombsSpawned[0]->ExplosionDelay)
+	{
+		// If the oldest bomb has despawned, replenish capacity and call SpawnBomb()
+		BombsSpawned.RemoveAt(0, 1, true);		
+		BombCapacity++;
+		SpawnBomb();
+	}
 }
