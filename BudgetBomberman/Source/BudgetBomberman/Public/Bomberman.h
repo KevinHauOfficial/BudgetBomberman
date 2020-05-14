@@ -25,10 +25,6 @@ public:
 
 	// Stats
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float Health = 1.f; // Can be increased with Health powerup
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float MaxHealth = 2.f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MovementSpeed = 1.f; // Can be increased with Speed powerup (drops by X levels on death)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float BombCapacity = 1.f; // Can be increased with Capacity powerup (until max capacity)
@@ -47,7 +43,6 @@ public:
 	void MoveRight(float Axis);
 
 	// Bomb spawning
-	TArray<ABomb*> BombsSpawned;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<ABomb> BombToSpawn;
 
@@ -56,7 +51,6 @@ public:
 
 private:
 	FVector GetBombSpawnLocation() const;
-	void RemoveDespawnedBombs();
 
 protected:
 	// Called when the game starts or when spawned

@@ -55,32 +55,25 @@ void ABomberman::MoveRight(float Axis)
 	SetActorLocation(GetActorLocation() + CurrentVelocity);
 }
 
+// Places bomb at the player's location
 void ABomberman::SpawnBomb()
 {
 	if (BombCapacity > 0)
 	{
-		// Setting location of bomb spawn to the nearest hundred
-		FVector BombSpawnLocation = GetBombSpawnLocation();
-
 		// Spawn a bomb and store a reference to that bomb
 		FActorSpawnParameters SpawnParams;
 		ABomb* SpawnedActorRef = GetWorld()->SpawnActor<ABomb>(
 			BombToSpawn, 
-			BombSpawnLocation, 
+			GetBombSpawnLocation(), 
 			GetActorRotation(), 
 			SpawnParams
 		);
-
 		// Set bomb's explosion range to the explosion range of the player
 		SpawnedActorRef->BombRangeMultiplier = BombRange;
-		// Add a reference to the bomb to the player's bomb spawned list
-		BombsSpawned.Emplace(SpawnedActorRef);
+		SpawnedActorRef->OwnedBy = this;
+
 		// Reduce the number of bombs the player can place down
 		BombCapacity--;
-	}
-	else // Remove any bombs that have blown up and replenish player's bomb capacity
-	{
-		RemoveDespawnedBombs();		
 	}
 }
 
@@ -95,17 +88,4 @@ FVector ABomberman::GetBombSpawnLocation() const
 	BombSpawnYToGrid *= 100;
 
 	return FVector(BombSpawnXToGrid, BombSpawnYToGrid, GetActorLocation().Z);
-}
-
-void ABomberman::RemoveDespawnedBombs()
-{
-	// Checks only if the first bomb in the list has despawned as they are
-	// appended by earliest bomb placed
-	if (BombsSpawned[0]->TimeSinceSpawned > BombsSpawned[0]->ExplosionDelay)
-	{
-		// If the oldest bomb has despawned, replenish capacity and call SpawnBomb()
-		BombsSpawned.RemoveAt(0, 1, true);		
-		BombCapacity++;
-		SpawnBomb();
-	}
 }

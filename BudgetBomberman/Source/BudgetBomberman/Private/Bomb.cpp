@@ -36,123 +36,109 @@ void ABomb::Tick(float DeltaTime)
 	
 	TimeSinceSpawned += GetWorld()->DeltaTimeSeconds;
 
-	if (TimeSinceSpawned < ExplosionDelay)
+	if (TimeSinceSpawned >= ExplosionDelay)
 	{
+		// Determines bomb range
 		float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
-
-		DrawDebugLine(
-			GetWorld(),
-			GetActorLocation(),
-			FVector(GetActorLocation().X + BombRange, GetActorLocation().Y, GetActorLocation().Z),
-			FColor::Green,
-			false
-		);
-
-		DrawDebugLine(
-			GetWorld(),
-			GetActorLocation(),
-			FVector(GetActorLocation().X - BombRange, GetActorLocation().Y, GetActorLocation().Z),
-			FColor::Green,
-			false
-		);
-
-		DrawDebugLine(
-			GetWorld(),
-			GetActorLocation(),
-			FVector(GetActorLocation().X, GetActorLocation().Y + BombRange, GetActorLocation().Z),
-			FColor::Green,
-			false
-		);
-
-		DrawDebugLine(
-			GetWorld(),
-			GetActorLocation(),
-			FVector(GetActorLocation().X, GetActorLocation().Y - BombRange, GetActorLocation().Z),
-			FColor::Green,
-			false
-		);
-
-		
-	}
-	
-	else
-	{
-		float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
-
-		TArray<AActor*> ActorsToIgnore;
+		// Stores the actor hit
 		FHitResult OutHit;
 
+		// Prevents bomb from hitting itself
 		this->SetActorEnableCollision(false);
-
-		// Check West
-		UKismetSystemLibrary::BoxTraceSingle(
-			GetWorld(), 
-			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(GetActorLocation().X, GetActorLocation().Y - BombRange, GetActorLocation().Z),
-			FVector(40.f, 0.f, 40.f),
-			FRotator(0.f, 0.f, 0.f),
-			ETraceTypeQuery::TraceTypeQuery_MAX,
-			false,
-			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
-			OutHit,
-			true,
-			FLinearColor(FColor::Red),
-			FLinearColor(FColor::Green)
-		);
-
-		// Check North
-		UKismetSystemLibrary::BoxTraceSingle(
-			GetWorld(), 
-			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(GetActorLocation().X + BombRange, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(0.f, 40.f, 40.f),
-			FRotator(0.f, 0.f, 0.f),
-			ETraceTypeQuery::TraceTypeQuery_MAX,
-			false,
-			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
-			OutHit,
-			true,
-			FLinearColor(FColor::Red),
-			FLinearColor(FColor::Green)
-		);
-
-		// Check East
-		UKismetSystemLibrary::BoxTraceSingle(
-			GetWorld(), 
-			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(GetActorLocation().X, GetActorLocation().Y + BombRange, GetActorLocation().Z),
-			FVector(40.f, 0.f, 40.f),
-			FRotator(0.f, 0.f, 0.f),
-			ETraceTypeQuery::TraceTypeQuery_MAX,
-			false,
-			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
-			OutHit,
-			true,
-			FLinearColor(FColor::Red),
-			FLinearColor(FColor::Green)
-		);
-
-		// Check South
-		UKismetSystemLibrary::BoxTraceSingle(
-			GetWorld(), 
-			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(GetActorLocation().X - BombRange, GetActorLocation().Y, GetActorLocation().Z),
-			FVector(0.f, 40.f, 40.f),
-			FRotator(0.f, 0.f, 0.f),
-			ETraceTypeQuery::TraceTypeQuery_MAX,
-			false,
-			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
-			OutHit,
-			true,
-			FLinearColor(FColor::Red),
-			FLinearColor(FColor::Green)
-		);
+		// Increases capacity; performed early in case player dies and reference cannot be accessed
+		OwnedBy->BombCapacity++;
+		
+		// Check north explosion
+		if (CheckExplosionDirection(OutHit, BombRange, 0.f))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s hit north!"), *OutHit.GetActor()->GetName());
+			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+			if (HitPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
+				HitPlayer->SpawnBomb();
+			}
+		}
+		//Check south explosion
+		if (CheckExplosionDirection(OutHit, -BombRange, 0.f))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s hit south!"), *OutHit.GetActor()->GetName());
+			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+			if (HitPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
+				HitPlayer->SpawnBomb();
+			}
+		}
+		//Check east explosion
+		if (CheckExplosionDirection(OutHit, 0.f, BombRange))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s hit east!"), *OutHit.GetActor()->GetName());
+			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+			if (HitPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
+				HitPlayer->SpawnBomb();
+			}
+		}
+		// Check west explosion
+		if (CheckExplosionDirection(OutHit, 0.f, -BombRange))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s hit west!"), *OutHit.GetActor()->GetName());
+			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+			if (HitPlayer)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
+				HitPlayer->SpawnBomb();
+			}
+		}
 
 		Destroy();
 	}
+}
+
+bool ABomb::CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY)
+{
+	TArray<AActor*> ActorsToIgnore;
 	
+	// North & South
+	if (RangeX != 0 && RangeY == 0)
+	{
+		return UKismetSystemLibrary::BoxTraceSingle(
+			GetWorld(), 
+			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
+			FVector(GetActorLocation().X + RangeX, GetActorLocation().Y, GetActorLocation().Z),
+			FVector(0.f, 40.f, 40.f),
+			FRotator(0.f, 0.f, 0.f),
+			ETraceTypeQuery::TraceTypeQuery_MAX,
+			false,
+			ActorsToIgnore,
+			EDrawDebugTrace::ForDuration,
+			OutHit,
+			true,
+			FLinearColor(FColor::Red),
+			FLinearColor(FColor::Green)
+		);
+	}
+	// East & West
+	if (RangeX == 0 && RangeY != 0)
+	{
+		return UKismetSystemLibrary::BoxTraceSingle(
+			GetWorld(), 
+			FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z),
+			FVector(GetActorLocation().X, GetActorLocation().Y + RangeY, GetActorLocation().Z),
+			FVector(40.f, 0.f, 40.f),
+			FRotator(0.f, 0.f, 0.f),
+			ETraceTypeQuery::TraceTypeQuery_MAX,
+			false,
+			ActorsToIgnore,
+			EDrawDebugTrace::ForDuration,
+			OutHit,
+			true,
+			FLinearColor(FColor::Red),
+			FLinearColor(FColor::Green)
+		);
+	}
+
+	return false;
 }

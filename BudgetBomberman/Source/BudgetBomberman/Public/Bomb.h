@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
 
+class ABomberman;
+
 UCLASS()
 class BUDGETBOMBERMAN_API ABomb : public AActor
 {
@@ -17,6 +19,8 @@ public:
 	ABomb();
 
 	// Properties
+	UPROPERTY(VisibleAnywhere, Category = "Properties")
+	ABomberman* OwnedBy = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Properties")
 	float TimeSinceSpawned = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Properties")
@@ -33,5 +37,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY);
 
 };
