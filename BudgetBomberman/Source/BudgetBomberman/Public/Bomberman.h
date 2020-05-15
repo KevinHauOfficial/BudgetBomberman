@@ -24,6 +24,8 @@ public:
 	ABomberman();
 
 	// Stats
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats")
+	bool bAlive = true;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MovementSpeed = 1.f; // Can be increased with Speed powerup (drops by X levels on death)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
@@ -31,7 +33,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MaxBombCapacity = 10.f; // Can be increased with Max Capacity powerup
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float BombRange = 1.f; // Can be increased by Range powerup
+	float BombRange = 2.f; // Can be increased by Range powerup
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float MaxBombRange = 10.f;
 
@@ -48,6 +50,8 @@ public:
 
 	UFUNCTION()
 	void SpawnBomb();
+	UFUNCTION()
+	void KillPlayer();
 
 private:
 	FVector GetBombSpawnLocation() const;

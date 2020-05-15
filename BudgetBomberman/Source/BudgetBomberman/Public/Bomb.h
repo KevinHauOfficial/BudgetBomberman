@@ -24,11 +24,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Properties")
 	float TimeSinceSpawned = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Properties")
-	float ExplosionDelay = 3.f;
+	float ExplosionDelay = 2.f;
 	UPROPERTY(VisibleAnywhere, Category = "Properties")
-	float BombRangeBase = 150.f;
+	float BombRangeBase = 140.f;
 	UPROPERTY(VisibleAnywhere, Category = "Properties")
 	float BombRangeMultiplier = 0.f;
+
+private:
+	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY);
+	void Explosion();
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,8 +41,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-private:
-	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY);
 
 };

@@ -7,7 +7,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Color.h"
 #include "UObject/ConstructorHelpers.h"
+
 #include "Bomberman.h"
+#include "BreakableBlocks.h"
 
 // Sets default values
 
@@ -30,70 +32,75 @@ void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TArray<AActor*> OverlappingActors;
-	GetOverlappingActors(OverlappingActors, TSubclassOf<ABomberman>());
-	
-	
+	// Accumulates time since bomb has been spawned
 	TimeSinceSpawned += GetWorld()->DeltaTimeSeconds;
 
 	if (TimeSinceSpawned >= ExplosionDelay)
 	{
-		// Determines bomb range
-		float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
-		// Stores the actor hit
-		FHitResult OutHit;
-
 		// Prevents bomb from hitting itself
 		this->SetActorEnableCollision(false);
 		// Increases capacity; performed early in case player dies and reference cannot be accessed
 		OwnedBy->BombCapacity++;
-		
-		// Check north explosion
-		if (CheckExplosionDirection(OutHit, BombRange, 0.f))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s hit north!"), *OutHit.GetActor()->GetName());
-			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-			if (HitPlayer)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
-				HitPlayer->SpawnBomb();
-			}
-		}
-		//Check south explosion
-		if (CheckExplosionDirection(OutHit, -BombRange, 0.f))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s hit south!"), *OutHit.GetActor()->GetName());
-			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-			if (HitPlayer)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
-				HitPlayer->SpawnBomb();
-			}
-		}
-		//Check east explosion
-		if (CheckExplosionDirection(OutHit, 0.f, BombRange))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s hit east!"), *OutHit.GetActor()->GetName());
-			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-			if (HitPlayer)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
-				HitPlayer->SpawnBomb();
-			}
-		}
-		// Check west explosion
-		if (CheckExplosionDirection(OutHit, 0.f, -BombRange))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s hit west!"), *OutHit.GetActor()->GetName());
-			ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-			if (HitPlayer)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s is a player!"), *HitPlayer->GetName());
-				HitPlayer->SpawnBomb();
-			}
-		}
 
+		// Explodes and makes appropriate calls in objects that were hit by the bomb's explosion
+		Explosion();
+		// Destroys self
 		Destroy();
+	}
+}
+
+void ABomb::Explosion()
+{
+	float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
+	FHitResult OutHit;
+
+	for (int32 Counter = 1; Counter < 5; Counter++)
+	{
+		// North and South
+		if (Counter < 3)
+		{
+			if (CheckExplosionDirection(OutHit, pow(-1, Counter) * BombRange, 0.f))
+			{
+				ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+				if (HitPlayer)
+				{
+					HitPlayer->KillPlayer();
+					// TODO reduce number of players remaining
+				}
+				else
+				{
+					// TODO destructible object
+					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(OutHit.GetActor());
+					if (HitBreakableBlock)
+					{
+						HitBreakableBlock->Destroy();
+					}
+				}
+				
+			}
+		}
+		// East and West
+		else
+		{
+			if (CheckExplosionDirection(OutHit, 0.f, pow(-1, Counter) * BombRange))
+			{
+				ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
+				if (HitPlayer)
+				{
+					HitPlayer->KillPlayer();
+					// TODO reduce number of players remaining
+				}
+				else
+				{
+					// TODO destructible object
+					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(OutHit.GetActor());
+					if (HitBreakableBlock)
+					{
+						HitBreakableBlock->Destroy();
+					}
+				}
+			}
+		}
 	}
 }
 

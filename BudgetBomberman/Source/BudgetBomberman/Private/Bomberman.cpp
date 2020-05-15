@@ -58,7 +58,7 @@ void ABomberman::MoveRight(float Axis)
 // Places bomb at the player's location
 void ABomberman::SpawnBomb()
 {
-	if (BombCapacity > 0)
+	if (bAlive && BombCapacity > 0)
 	{
 		// Spawn a bomb and store a reference to that bomb
 		FActorSpawnParameters SpawnParams;
@@ -88,4 +88,14 @@ FVector ABomberman::GetBombSpawnLocation() const
 	BombSpawnYToGrid *= 100;
 
 	return FVector(BombSpawnXToGrid, BombSpawnYToGrid, GetActorLocation().Z);
+}
+
+void ABomberman::KillPlayer()
+{
+	UStaticMeshComponent* Mesh = FindComponentByClass<UStaticMeshComponent>();
+
+	bAlive = false;
+	SetActorEnableCollision(false);
+	Mesh->SetVisibility(false);
+	MovementSpeed = 3.f;
 }
