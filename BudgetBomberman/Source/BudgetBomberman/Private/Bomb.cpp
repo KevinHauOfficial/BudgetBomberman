@@ -3,9 +3,13 @@
 
 #include "Bomb.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/Color.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialInterface.h"
+#include "Math/UnrealMathUtility.h"
 #include "UObject/ConstructorHelpers.h"
 
 #include "Bomberman.h"
@@ -24,6 +28,12 @@ void ABomb::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Find the bomb mesh and set it to a dynamic mesh
+	auto Cube = FindComponentByClass<UStaticMeshComponent>();
+	auto Material = Cube->GetMaterial(0);
+	DynamicMaterial = UMaterialInstanceDynamic::Create(Material, NULL);
+	Cube->SetMaterial(0, DynamicMaterial);
+
 	TimeSinceSpawned = GetWorld()->DeltaTimeSeconds;
 }
 
@@ -34,6 +44,10 @@ void ABomb::Tick(float DeltaTime)
 
 	// Accumulates time since bomb has been spawned
 	TimeSinceSpawned += GetWorld()->DeltaTimeSeconds;
+
+	// Changes the color of the bomb when its closer to detonating
+	float Blend = FMath::Clamp<float>(TimeSinceSpawned / ExplosionDelay + 0.3, 0.f, 1.f);
+	DynamicMaterial->SetScalarParameterValue(TEXT("Blend"), Blend);
 
 	if (TimeSinceSpawned >= ExplosionDelay)
 	{

@@ -8,6 +8,7 @@
 #include "Bomb.generated.h"
 
 class ABomberman;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class BUDGETBOMBERMAN_API ABomb : public AActor
@@ -31,6 +32,8 @@ public:
 	float BombRangeMultiplier = 0.f;
 
 private:
+	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
+
 	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY);
 	void Explosion();
 
