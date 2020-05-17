@@ -14,6 +14,7 @@
 
 #include "Bomberman.h"
 #include "BreakableBlocks.h"
+#include "PowerUp.h"
 
 // Sets default values
 
@@ -75,22 +76,32 @@ void ABomb::Explosion()
 		{
 			if (CheckExplosionDirection(OutHit, pow(-1, Counter) * BombRange, 0.f))
 			{
-				ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-				if (HitPlayer)
+				AActor* HitActor = OutHit.GetActor();
+
+				if (Cast<ABomberman>(HitActor))
 				{
+					ABomberman* HitPlayer = Cast<ABomberman>(HitActor);
 					HitPlayer->KillPlayer();
 					// TODO reduce number of players remaining
 				}
-				else
+				else if (Cast<ABreakableBlocks>(HitActor))
 				{
-					// TODO destructible object
-					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(OutHit.GetActor());
-					if (HitBreakableBlock)
+					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(HitActor);
+					HitBreakableBlock->Destroy();
+				}
+				else if (Cast<APowerUp>(HitActor))
+				{
+					APowerUp* HitPowerUp = Cast<APowerUp>(HitActor);
+					HitPowerUp->Destroy();
+				}
+				else if (Cast<ABomb>(HitActor))
+				{
+					ABomb* HitBomb  = Cast<ABomb>(HitActor);
+					if (HitBomb->ExplosionDelay - HitBomb->TimeSinceSpawned > 0.5f)
 					{
-						HitBreakableBlock->Destroy();
+						HitBomb->TimeSinceSpawned = HitBomb->ExplosionDelay - 0.5f;
 					}
 				}
-				
 			}
 		}
 		// East and West
@@ -98,19 +109,30 @@ void ABomb::Explosion()
 		{
 			if (CheckExplosionDirection(OutHit, 0.f, pow(-1, Counter) * BombRange))
 			{
-				ABomberman* HitPlayer = Cast<ABomberman>(OutHit.GetActor());
-				if (HitPlayer)
+				AActor* HitActor = OutHit.GetActor();
+
+				if (Cast<ABomberman>(HitActor))
 				{
+					ABomberman* HitPlayer = Cast<ABomberman>(HitActor);
 					HitPlayer->KillPlayer();
 					// TODO reduce number of players remaining
 				}
-				else
+				else if (Cast<ABreakableBlocks>(HitActor))
 				{
-					// TODO destructible object
-					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(OutHit.GetActor());
-					if (HitBreakableBlock)
+					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(HitActor);
+					HitBreakableBlock->Destroy();
+				}
+				else if (Cast<APowerUp>(HitActor))
+				{
+					APowerUp* HitPowerUp = Cast<APowerUp>(HitActor);
+					HitPowerUp->Destroy();
+				}
+				else if (Cast<ABomb>(HitActor))
+				{
+					ABomb* HitBomb  = Cast<ABomb>(HitActor);
+					if (HitBomb->ExplosionDelay - HitBomb->TimeSinceSpawned > 0.5f)
 					{
-						HitBreakableBlock->Destroy();
+						HitBomb->TimeSinceSpawned = HitBomb->ExplosionDelay - 0.5f;
 					}
 				}
 			}

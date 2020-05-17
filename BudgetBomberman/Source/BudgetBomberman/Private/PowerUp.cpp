@@ -17,7 +17,7 @@ APowerUp::APowerUp()
 	
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetNotifyRigidBodyCollision(true);
-	BoxComponent->BodyInstance.SetCollisionProfileName("OverlapAllDynamic");
+	BoxComponent->BodyInstance.SetCollisionProfileName("BlockAll");
 	BoxComponent->SetMobility(EComponentMobility::Static);
 	BoxComponent->CastShadow = false;
 	BoxComponent->SetBoxExtent(FVector(30.f, 30.f, 10.f));
