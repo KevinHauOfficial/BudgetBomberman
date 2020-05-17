@@ -2,9 +2,6 @@
 
 
 #include "BreakableBlocks.h"
-#include "Engine/World.h"
-
-#include "PowerUp.h"
 
 // Sets default values
 ABreakableBlocks::ABreakableBlocks()
@@ -49,19 +46,6 @@ void ABreakableBlocks::DropPowerUp()
 		{
 			// TODO drop LootTable[Key] powerup
 			UE_LOG(LogTemp, Warning, TEXT("%s dropped a %s!"), *GetName(), *Key);
-			
-			FActorSpawnParameters SpawnParams;
-			if (Key != "Nothing")
-			{
-				APowerUp* SpawnedActorRef = GetWorld()->SpawnActor<APowerUp>(
-					PowerUpToSpawn, 
-					GetActorLocation(), 
-					GetActorRotation(), 
-					SpawnParams
-				);
-				SpawnedActorRef->PowerUp = Key;
-			}
-			
 			break;
 		}
 		else 

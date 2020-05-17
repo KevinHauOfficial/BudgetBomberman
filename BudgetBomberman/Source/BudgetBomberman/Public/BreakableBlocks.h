@@ -5,8 +5,6 @@
 #include "GameFramework/Actor.h"
 #include "BreakableBlocks.generated.h"
 
-class APowerUp;
-
 UCLASS()
 class BUDGETBOMBERMAN_API ABreakableBlocks : public AActor
 {
@@ -18,8 +16,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loot Table")
 	TMap<FString, int32> LootTable;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loot Table")
-	TSubclassOf<APowerUp> PowerUpToSpawn = nullptr;
 
 	void Destroy();
 	void DropPowerUp();

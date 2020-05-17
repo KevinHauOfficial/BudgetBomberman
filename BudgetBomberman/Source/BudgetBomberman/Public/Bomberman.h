@@ -27,7 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats")
 	bool bAlive = true;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
-	float MovementSpeed = 1.5f; // Can be increased with Speed powerup (drops by X levels on death)
+	float MovementSpeed = 1.f; // Can be increased with Speed powerup (drops by X levels on death)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float BombCapacity = 1.f; // Can be increased with Capacity powerup (until max capacity)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
