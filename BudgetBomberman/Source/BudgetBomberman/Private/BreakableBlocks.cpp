@@ -13,7 +13,7 @@ ABreakableBlocks::ABreakableBlocks()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Set up loot table
-	LootTable.Emplace("Nothing") = 70;
+	LootTable.Emplace("Nothing") = 100;
 	LootTable.Emplace("MovementSpeedUp") = 6;
 	LootTable.Emplace("BombCapacityUp") = 11;
 	LootTable.Emplace("MaxBombCapacityUp") = 1;
@@ -47,9 +47,7 @@ void ABreakableBlocks::DropPowerUp()
 	{
 		if (RandomNumber < LootTable[Key])
 		{
-			// TODO drop LootTable[Key] powerup
 			UE_LOG(LogTemp, Warning, TEXT("%s dropped a %s!"), *GetName(), *Key);
-
 			if (Key != "Nothing")
 			{
 				FActorSpawnParameters SpawnParams;
@@ -61,7 +59,6 @@ void ABreakableBlocks::DropPowerUp()
 				);
 				SpawnedActorRef->PowerUp = Key;
 			}
-
 			break;
 		}
 		else 

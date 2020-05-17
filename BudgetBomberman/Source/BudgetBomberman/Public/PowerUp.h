@@ -14,7 +14,8 @@ class BUDGETBOMBERMAN_API APowerUp : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APowerUp();
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Properties")
 	FString PowerUp = "";
 
 protected:

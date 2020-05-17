@@ -15,7 +15,7 @@ class BUDGETBOMBERMAN_API AArenaLevel : public ALevelScriptActor
 
 public:
 	UPROPERTY()
-	float SpawnChance = 75.f;
+	float SpawnChance = 80.f;
 
 	// Block spawning
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
