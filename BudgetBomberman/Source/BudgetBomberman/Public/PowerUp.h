@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "PowerUp.generated.h"
 
+class UBoxComponent;
+
 UCLASS()
 class BUDGETBOMBERMAN_API APowerUp : public AActor
 {
@@ -17,6 +19,21 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Properties")
 	FString PowerUp = "";
+
+	// Overlap
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* BoxComponent = nullptr;
+
+	UFUNCTION()
+	void OnBeginOverlap(
+		class UPrimitiveComponent* Comp, 
+		class AActor* OtherActor, 
+		class UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep, 
+		const FHitResult& SweepResult
+	);
+
 
 protected:
 	// Called when the game starts or when spawned

@@ -50,6 +50,8 @@ void ABreakableBlocks::DropPowerUp()
 			UE_LOG(LogTemp, Warning, TEXT("%s dropped a %s!"), *GetName(), *Key);
 			if (Key != "Nothing")
 			{
+				SetActorEnableCollision(false);
+				
 				FActorSpawnParameters SpawnParams;
 				APowerUp* SpawnedActorRef = GetWorld()->SpawnActor<APowerUp>(
 					PowerUpToSpawn, 
