@@ -2,6 +2,8 @@
 
 
 #include "Bomberman.h"
+#include "Components/StaticMeshComponent.h"
+
 #include "Bomb.h"
 
 // Sets default values
@@ -92,6 +94,8 @@ FVector ABomberman::GetBombSpawnLocation() const
 
 void ABomberman::KillPlayer()
 {
+	// TODO reduce number of alive players in AArenaLevel
+
 	UStaticMeshComponent* Mesh = FindComponentByClass<UStaticMeshComponent>();
 
 	bAlive = false;

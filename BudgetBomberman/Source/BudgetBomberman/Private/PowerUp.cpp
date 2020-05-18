@@ -73,11 +73,3 @@ void APowerUp::OnBeginOverlap(
 	}
 	
 }
-
-// Called every frame
-void APowerUp::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

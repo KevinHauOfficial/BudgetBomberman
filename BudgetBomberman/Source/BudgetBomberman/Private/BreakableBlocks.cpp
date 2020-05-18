@@ -71,7 +71,7 @@ void ABreakableBlocks::DropPowerUp()
 	
 }
 
-int32 ABreakableBlocks::CalculateSum()
+int32 ABreakableBlocks::CalculateSum() const
 {
 	int32 Sum = 0;
 

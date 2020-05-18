@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/StaticMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
 
@@ -34,8 +33,9 @@ public:
 private:
 	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
 
-	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY);
-	void Explosion();
+	void Explosion() const;
+	void ExplosionDestroy(AActor* HitActor) const;
+	bool CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY) const;
 
 protected:
 	// Called when the game starts or when spawned

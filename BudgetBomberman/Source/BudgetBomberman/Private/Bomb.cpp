@@ -29,13 +29,13 @@ void ABomb::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Find the bomb mesh and set it to a dynamic mesh
-	auto Cube = FindComponentByClass<UStaticMeshComponent>();
+	TimeSinceSpawned = GetWorld()->DeltaTimeSeconds;
+
+	// Find the bomb mesh and set it to a dynamic mesh to change colour
+	UStaticMeshComponent* Cube = FindComponentByClass<UStaticMeshComponent>();
 	auto Material = Cube->GetMaterial(0);
 	DynamicMaterial = UMaterialInstanceDynamic::Create(Material, NULL);
 	Cube->SetMaterial(0, DynamicMaterial);
-
-	TimeSinceSpawned = GetWorld()->DeltaTimeSeconds;
 }
 
 // Called every frame
@@ -54,17 +54,16 @@ void ABomb::Tick(float DeltaTime)
 	{
 		// Prevents bomb from hitting itself
 		this->SetActorEnableCollision(false);
-		// Increases capacity; performed early in case player dies and reference cannot be accessed
+		// Replenishes capacity; performed early in case player dies and reference cannot be accessed
 		OwnedBy->BombCapacity++;
 
 		// Explodes and makes appropriate calls in objects that were hit by the bomb's explosion
 		Explosion();
-		// Destroys self
 		Destroy();
 	}
 }
 
-void ABomb::Explosion()
+void ABomb::Explosion() const
 {
 	float BombRange = BombRangeBase + (BombRangeMultiplier - 1.f) * 100.f;
 	FHitResult OutHit;
@@ -77,31 +76,7 @@ void ABomb::Explosion()
 			if (CheckExplosionDirection(OutHit, pow(-1, Counter) * BombRange, 0.f))
 			{
 				AActor* HitActor = OutHit.GetActor();
-
-				if (Cast<ABomberman>(HitActor))
-				{
-					ABomberman* HitPlayer = Cast<ABomberman>(HitActor);
-					HitPlayer->KillPlayer();
-					// TODO reduce number of players remaining
-				}
-				else if (Cast<ABreakableBlocks>(HitActor))
-				{
-					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(HitActor);
-					HitBreakableBlock->Destroy();
-				}
-				else if (Cast<APowerUp>(HitActor))
-				{
-					APowerUp* HitPowerUp = Cast<APowerUp>(HitActor);
-					HitPowerUp->Destroy();
-				}
-				else if (Cast<ABomb>(HitActor))
-				{
-					ABomb* HitBomb  = Cast<ABomb>(HitActor);
-					if (HitBomb->ExplosionDelay - HitBomb->TimeSinceSpawned > 0.5f)
-					{
-						HitBomb->TimeSinceSpawned = HitBomb->ExplosionDelay - 0.5f;
-					}
-				}
+				ExplosionDestroy(HitActor);
 			}
 		}
 		// East and West
@@ -110,37 +85,40 @@ void ABomb::Explosion()
 			if (CheckExplosionDirection(OutHit, 0.f, pow(-1, Counter) * BombRange))
 			{
 				AActor* HitActor = OutHit.GetActor();
-
-				if (Cast<ABomberman>(HitActor))
-				{
-					ABomberman* HitPlayer = Cast<ABomberman>(HitActor);
-					HitPlayer->KillPlayer();
-					// TODO reduce number of players remaining
-				}
-				else if (Cast<ABreakableBlocks>(HitActor))
-				{
-					ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(HitActor);
-					HitBreakableBlock->Destroy();
-				}
-				else if (Cast<APowerUp>(HitActor))
-				{
-					APowerUp* HitPowerUp = Cast<APowerUp>(HitActor);
-					HitPowerUp->Destroy();
-				}
-				else if (Cast<ABomb>(HitActor))
-				{
-					ABomb* HitBomb  = Cast<ABomb>(HitActor);
-					if (HitBomb->ExplosionDelay - HitBomb->TimeSinceSpawned > 0.5f)
-					{
-						HitBomb->TimeSinceSpawned = HitBomb->ExplosionDelay - 0.5f;
-					}
-				}
+				ExplosionDestroy(HitActor);
 			}
 		}
 	}
 }
 
-bool ABomb::CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY)
+void ABomb::ExplosionDestroy(AActor* HitActor) const
+{
+	if (Cast<ABomberman>(HitActor))
+	{
+		ABomberman* HitPlayer = Cast<ABomberman>(HitActor);
+		HitPlayer->KillPlayer();
+	}
+	else if (Cast<ABreakableBlocks>(HitActor))
+	{
+		ABreakableBlocks* HitBreakableBlock = Cast<ABreakableBlocks>(HitActor);
+		HitBreakableBlock->Destroy();
+	}
+	else if (Cast<APowerUp>(HitActor))
+	{
+		APowerUp* HitPowerUp = Cast<APowerUp>(HitActor);
+		HitPowerUp->Destroy();
+	}
+	else if (Cast<ABomb>(HitActor))
+	{
+		ABomb* HitBomb  = Cast<ABomb>(HitActor);
+		if (HitBomb->ExplosionDelay - HitBomb->TimeSinceSpawned > 0.5f)
+		{
+			HitBomb->TimeSinceSpawned = HitBomb->ExplosionDelay - 0.5f;
+		}
+	}
+}
+
+bool ABomb::CheckExplosionDirection(FHitResult &OutHit, float RangeX, float RangeY) const
 {
 	TArray<AActor*> ActorsToIgnore;
 	

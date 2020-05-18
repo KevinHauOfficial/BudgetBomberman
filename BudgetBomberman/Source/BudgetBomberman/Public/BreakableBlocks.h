@@ -21,11 +21,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<APowerUp> PowerUpToSpawn;
 
-	void Destroy();
 	void DropPowerUp();
+	void Destroy();
 
 private:
-	int32 CalculateSum();
+	int32 CalculateSum() const;
 
 protected:
 	// Called when the game starts or when spawned

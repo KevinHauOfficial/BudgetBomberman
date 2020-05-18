@@ -12,14 +12,14 @@ void AArenaLevel::BeginPlay()
     GenerateMap();
 }
 
-void AArenaLevel::GenerateMap()
+void AArenaLevel::GenerateMap() const
 {
     for (int Row = -900; Row <= 900; Row += 100)
     {
         for (int Column = -900; Column <= 900; Column += 100)
         {
-            if (// Spawn if location isn't the three blocks at each corner
-                !((abs(Row) == 900 && (abs(Column) == 900 || abs(Column) == 800)) ||
+            // Spawn if location isn't the three blocks at each corner
+            if ( !((abs(Row) == 900 && (abs(Column) == 900 || abs(Column) == 800)) ||
                 (abs(Row) == 800 && abs(Column) == 900)))
             {
                 SpawnBreakableBlocks(Row, Column);
@@ -28,7 +28,7 @@ void AArenaLevel::GenerateMap()
     }
 }
 
-void AArenaLevel::SpawnBreakableBlocks(int Row, int Column)
+void AArenaLevel::SpawnBreakableBlocks(int Row, int Column) const
 {
     float RandomNumber = rand() % 100;
 
