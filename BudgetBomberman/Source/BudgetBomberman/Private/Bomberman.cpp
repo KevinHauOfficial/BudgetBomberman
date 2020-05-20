@@ -3,6 +3,7 @@
 
 #include "Bomberman.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "Bomb.h"
 
@@ -60,7 +61,10 @@ void ABomberman::MoveRight(float Axis)
 // Places bomb at the player's location
 void ABomberman::SpawnBomb()
 {
-	if (bAlive && BombCapacity > 0)
+	bool BombAtLocation = OtherBombsAtLocation();
+	UE_LOG(LogTemp, Warning, TEXT("Bomb at location: %d"), BombAtLocation);
+
+	if (bAlive && BombCapacity > 0 && !OtherBombsAtLocation())
 	{
 		// Spawn a bomb and store a reference to that bomb
 		FActorSpawnParameters SpawnParams;
@@ -77,6 +81,25 @@ void ABomberman::SpawnBomb()
 		// Reduce the number of bombs the player can place down
 		BombCapacity--;
 	}
+}
+
+bool ABomberman::OtherBombsAtLocation()
+{
+	TArray<AActor*> ActorsToIgnore;
+	FHitResult OutHit;
+
+	return UKismetSystemLibrary::SphereTraceSingle(
+		GetWorld(),
+		GetBombSpawnLocation(),
+		GetBombSpawnLocation(),
+		30.f,
+		ETraceTypeQuery::TraceTypeQuery_MAX,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		OutHit,
+		true
+	);
 }
 
 FVector ABomberman::GetBombSpawnLocation() const

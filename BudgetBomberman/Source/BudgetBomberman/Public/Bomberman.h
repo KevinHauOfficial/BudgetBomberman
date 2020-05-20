@@ -54,6 +54,7 @@ public:
 	void KillPlayer();
 
 private:
+	bool OtherBombsAtLocation();
 	FVector GetBombSpawnLocation() const;
 
 protected:
