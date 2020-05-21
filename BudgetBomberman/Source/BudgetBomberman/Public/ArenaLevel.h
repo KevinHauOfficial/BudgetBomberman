@@ -14,6 +14,12 @@ class BUDGETBOMBERMAN_API AArenaLevel : public ALevelScriptActor
 	GENERATED_BODY()
 
 public:
+	AArenaLevel();
+	
+	UPROPERTY(EditAnywhere, Category = "Properties")
+	float RoundTime = 180.f;
+	UPROPERTY(VisibleAnywhere, Category = "Properties")
+	float Timer = 180.f;
 	UPROPERTY(EditAnywhere, Category = "Properties")
 	float SpawnChance = 75.f;
 
@@ -22,6 +28,8 @@ public:
 	TSubclassOf<ABreakableBlocks> BreakableBlock;
 
 	void GenerateMap() const;
+	void EndGame();
+	void Restart();
 	
 private:
 	void SpawnBreakableBlocks(int Row, int Column) const;
@@ -29,4 +37,8 @@ private:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 };

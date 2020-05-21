@@ -61,6 +61,7 @@ void ABomberman::MoveRight(float Axis)
 // Places bomb at the player's location
 void ABomberman::SpawnBomb()
 {
+	// TODO fix so bomb can't be placed on other bombs; NOT CORRECTLY IMPLEMENTED
 	bool BombAtLocation = OtherBombsAtLocation();
 	UE_LOG(LogTemp, Warning, TEXT("Bomb at location: %d"), BombAtLocation);
 

@@ -5,6 +5,12 @@
 #include "BreakableBlocks.h"
 #include "Engine/World.h"
 
+AArenaLevel::AArenaLevel()
+{
+ 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void AArenaLevel::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,4 +49,16 @@ void AArenaLevel::SpawnBreakableBlocks(int Row, int Column) const
             SpawnParams
         );
     }
+}
+
+void AArenaLevel::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+    if (Timer > 0)
+    {
+        Timer = FMath::Clamp(Timer - DeltaTime, 0.f, RoundTime);
+        UE_LOG(LogTemp, Warning, TEXT("Time remaining in seconds: %f"), Timer);
+    }
+    
 }
